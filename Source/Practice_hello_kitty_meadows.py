@@ -1,8 +1,26 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import trim_mean
+import os
 
-farm_data = pd.read_csv(r"W:\FUCK YOU MICROSOFT\cat_train\Data\farm_data.csv")
+
+def load_farm_data(file_name):
+    # 1. Находим, где мы находимся сейчас
+    current_dir = os.path.dirname(__file__)
+
+    # 2. Поднимаемся на уровень выше (в корень проекта)
+    project_root = os.path.dirname(current_dir)
+
+    # 3. Собираем путь к файлу в папке data
+    # os.path.join сам поставит нужные слеши для Windows или Mac
+    file_path = os.path.join(project_root, 'Data', 'farm_data.csv')
+
+
+    data = pd.read_csv(file_path)
+    return data
+
+
+farm_data = load_farm_data('farm_data.csv')
 milk_yield = farm_data['milk_yield_liters']
 
 
@@ -23,9 +41,12 @@ def variability_estimation(df):
     std = df.std()
     iqr = df.quantile(q=0.75) - df.quantile(q=0.25)
     return std, iqr
+
+
 std_milk, iqr_milk = variability_estimation(milk_yield)
 print("Стандартное отклонение: ", round(std_milk, 3),
       "\nМежквартильный размах: ", round(iqr_milk, 3))
+
 
 def plot_boxplot(df):
     fig, ax = plt.subplots(figsize=(5, 5))
@@ -37,7 +58,7 @@ def plot_boxplot(df):
     plt.show()
 
 
-#plot_boxplot(milk_yield)
+# plot_boxplot(milk_yield)
 
 def plot_histogram(df):
     fig, ax = plt.subplots(figsize=(5, 5))
@@ -49,7 +70,7 @@ def plot_histogram(df):
     plt.show()
 
 
-#plot_histogram(milk_yield)
+# plot_histogram(milk_yield)
 
 
 def plot_scatterplot_hexbin(df):
@@ -66,4 +87,4 @@ def plot_scatterplot_hexbin(df):
 
 correl_milk = plot_scatterplot_hexbin(farm_data)
 print('Корреляция между количеством надоя и часами кошачьего патруля: ', round(correl_milk, 3))
-#Присутствие котиков практически не влияет на надой
+# Присутствие котиков практически не влияет на надой
