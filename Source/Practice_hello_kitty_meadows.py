@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import trim_mean
 import os
 from sklearn.utils import resample
+import numpy as np
 
 
 def assessments_of_central_position(df):
@@ -65,6 +66,17 @@ def bootstrap_hist(df):
     return confidence_interval
 
 
+def permutation_test(df1, df2):
+    df = np.append(df1, df2)
+    result = []
+    for _ in range(1000):
+        np.random.shuffle(df)
+        mas_a = df[:len(df1)]
+        mas_b = df[len(df1):]
+        result.append(np.mean(mas_a) - np.mean(mas_b))
+    return result
+
+
 if __name__ == "__main__":
     def load_farm_data(file_name):
         # 1. Находим, где мы находимся сейчас
@@ -83,12 +95,20 @@ if __name__ == "__main__":
 
     farm_data = load_farm_data('farm_data.csv')
     milk_yield = farm_data['milk_yield_liters']
+    standard = farm_data.loc[farm_data['diet_type'] == 'Standard', 'milk_yield_liters']
+    hello_kitty_clover = farm_data.loc[farm_data['diet_type'] == 'Hello_Kitty_Clover', 'milk_yield_liters']
+    difference_in_means = standard.mean() - hello_kitty_clover.mean()
+    permutation_mean = permutation_test(np.array(standard), np.array(hello_kitty_clover))
+    p_value = np.mean(([abs(_) >= abs(difference_in_means) for _ in permutation_mean]))
     mean_milk, median_milk, trim_mean_milk = assessments_of_central_position(milk_yield)
+    std_milk, iqr_milk = variability_estimation(milk_yield)
+
+
+    print('Часть 1\n')
+
     print('Среднее значение: ', round(mean_milk, 3),
           "\nМедиана: ", round(median_milk, 3),
           "\nУсеченное среднее: ", round(trim_mean_milk, 3))
-
-    std_milk, iqr_milk = variability_estimation(milk_yield)
     print("Стандартное отклонение: ", round(std_milk, 3),
           "\nМежквартильный размах: ", round(iqr_milk, 3))
     print('Корреляция между количеством надоя и часами кошачьего патруля: ',
@@ -96,7 +116,15 @@ if __name__ == "__main__":
     # Присутствие котиков практически не влияет на надой
     plot_boxplot(milk_yield)
     plot_histogram(milk_yield)
+
+    print('Часть 2\n')
     print('Доверительный интервал: ', bootstrap_hist(milk_yield))
     # Гистограмма напоминает нормальное распределение, в целом все средние значения рано или поздно создадут нормальное распределение,
     # даже если исходные данные такими не являлись
-    #привеет
+
+    print('Часть 3')
+    print('Средний надой с обычным кормом: ', standard.mean(),
+          '\nСредний надой с кормом хелоу китти: ', hello_kitty_clover.mean(),
+          '\nРазница между средними: ', difference_in_means)
+    print('p-value: ', p_value)
+    #по п значению можно сделать вывод, что корм хелоу китти лучше, чем обычный
