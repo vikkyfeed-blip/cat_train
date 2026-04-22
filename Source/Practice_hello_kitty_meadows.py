@@ -76,22 +76,21 @@ def permutation_test(df1, df2):
         result.append(np.mean(mas_a) - np.mean(mas_b))
     return result
 
+def load_farm_data(file_name):
+    # 1. Находим, где мы находимся сейчас
+    current_dir = os.path.dirname(__file__)
+
+    # 2. Поднимаемся на уровень выше (в корень проекта)
+    project_root = os.path.dirname(current_dir)
+
+    # 3. Собираем путь к файлу в папке data
+    # os.path.join сам поставит нужные слеши для Windows или Mac
+    file_path = os.path.join(project_root, 'Data', file_name)
+
+    data = pd.read_csv(str(file_path))
+    return data
 
 if __name__ == "__main__":
-    def load_farm_data(file_name):
-        # 1. Находим, где мы находимся сейчас
-        current_dir = os.path.dirname(__file__)
-
-        # 2. Поднимаемся на уровень выше (в корень проекта)
-        project_root = os.path.dirname(current_dir)
-
-        # 3. Собираем путь к файлу в папке data
-        # os.path.join сам поставит нужные слеши для Windows или Mac
-        file_path = os.path.join(project_root, 'Data', 'farm_data.csv')
-
-        data = pd.read_csv(file_path)
-        return data
-
 
     farm_data = load_farm_data('farm_data.csv')
     milk_yield = farm_data['milk_yield_liters']
