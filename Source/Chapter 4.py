@@ -36,3 +36,4 @@ if __name__ == "__main__":
     intercept, coef = linearregression(predictors_lung, outcome_lung)
     print("Пересечение b0: ", intercept,
           "\nКоэффициент b1: ", coef)
+    ox = '1'
