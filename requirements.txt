@@ -1,8 +1,10 @@
-pandas
-numpy
-scipy
-seaborn
-matplotlib
+pandas~=3.0.2
+numpy~=2.4.4
+scipy~=1.17.1
+seaborn~=0.13.2
+matplotlib~=3.10.8
 sklearn.utils
-scikit-learn
+scikit-learn~=1.8.0
 numpy
+wquantiles~=0.6
+statsmodels~=0.14.6
